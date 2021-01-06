@@ -2,9 +2,6 @@ use std::fmt;
 use ndarray::*;
 
 #[derive(Clone, Copy, Debug)]
-pub enum Tiling { Clamp, Loop }
-
-#[derive(Clone, Copy, Debug)]
 pub enum Dir { Right, Down, Left, Up }
 
 impl Dir {
@@ -20,27 +17,21 @@ struct Cell { right: bool, down: bool }
 
 pub struct Maze {
 	data: Array2<Cell>,
-	pub tiling: Tiling,
 }
 
 impl Maze {
-	pub fn new(w: usize, h: usize, tiling: Tiling, open: bool) -> Self {
-		return Maze {
-			data: Array2::from_shape_simple_fn((w, h), || Cell {right: open, down: open}),
-			tiling,
+	pub fn new(w: usize, h: usize, open: bool) -> Self {
+		Maze {
+			data: Array2::from_shape_simple_fn((w, h), || Cell {right: open, down: open})
 		}
 	}
 
 	pub fn shift(&self, dir: Dir, (x, y): Pos) -> Option<Pos> {
-		let wrap = match self.tiling {
-			Tiling::Loop => |a:Pos| Some(a),
-			Tiling::Clamp => |_| None,
-		};
 		match dir {
-			Dir::Right => if x == self.width()-1  {wrap((0,y))} else {Some((x+1,y))},
-			Dir::Down  => if y == self.height()-1 {wrap((x,0))} else {Some((x,y+1))},
-			Dir::Left  => if x == 0 {wrap((self.width()-1,y))}  else {Some((x-1,y))},
-			Dir::Up    => if y == 0 {wrap((x,self.height()-1))} else {Some((x,y-1))},
+			Dir::Right => if x == self.width()-1  {None} else {Some((x+1,y))},
+			Dir::Down  => if y == self.height()-1 {None} else {Some((x,y+1))},
+			Dir::Left  => if x == 0 {None}  else {Some((x-1,y))},
+			Dir::Up    => if y == 0 {None} else {Some((x,y-1))},
 		}
 	}
 

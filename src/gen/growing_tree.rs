@@ -34,7 +34,7 @@ pub fn growing_tree2<T, Push, Pop>(
 	pop: impl Fn(&mut T) -> Option<(Dir, Pos)>,
 ) -> Maze {
 	let mut rng = rand::thread_rng();
-	let mut maze = Maze::new(w, h, Tiling::Clamp, false);
+	let mut maze = Maze::new(w, h, false);
 	let mut seen: Array2<bool> = Array2::from_shape_simple_fn((w, h), || false);
 
 	let start = (rng.gen_range(0..w), rng.gen_range(0..h));
@@ -74,7 +74,7 @@ pub fn growing_tree<T>(
 	pop: impl Fn(&mut T) -> Option<Pos>,
 ) -> Maze {
 	let mut rng = rand::thread_rng();
-	let mut maze = Maze::new(w, h, Tiling::Clamp, false);
+	let mut maze = Maze::new(w, h, false);
 	let mut seen: Array2<bool> = Array2::from_shape_simple_fn((w, h), || false);
 
 	let start = (rng.gen_range(0..w), rng.gen_range(0..h));

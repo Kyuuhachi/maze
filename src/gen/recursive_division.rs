@@ -6,7 +6,7 @@ struct Rect(usize, usize, usize, usize);
 
 pub fn generate(w: usize, h: usize) -> Maze {
 	let mut rng = rand::thread_rng();
-	let mut maze = Maze::new(w, h, Tiling::Clamp, true);
+	let mut maze = Maze::new(w, h, true);
 	let mut rects = Vec::new();
 	rects.push(Rect(0, 0, w, h));
 	while let Some(Rect(x1, y1, x2, y2)) = rects.pop() {

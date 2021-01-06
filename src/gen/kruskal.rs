@@ -14,7 +14,7 @@ impl ena::unify::UnifyKey for Key {
 
 pub fn generate(w: usize, h: usize) -> Maze {
 	let mut rng = rand::thread_rng();
-	let mut maze = Maze::new(w, h, Tiling::Clamp, false);
+	let mut maze = Maze::new(w, h, false);
 	let mut poss = Vec::new();
 	let mut uf: InPlaceUnificationTable<Key> = InPlaceUnificationTable::new();
 	let mut keys = Array2::from_shape_simple_fn((w, h), || Key(0));
