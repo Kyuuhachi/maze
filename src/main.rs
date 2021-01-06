@@ -6,7 +6,7 @@ mod gen {
 	pub mod kruskal;
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
 	use std::time::Instant;
 	let time0 = Instant::now();
 	// let maze = gen::recursive_division::generate(300, 300);
@@ -22,8 +22,10 @@ fn main() {
 	let img = render::render(&maze, 64, 0., 1.0);
 	let time2 = Instant::now();
 	println!("Rendered in {:?}", time2 - time1);
-	img.save("test.png").unwrap();
+	img.save("test.png")?;
 	let time3 = Instant::now();
 	println!("Saved in {:?}", time3 - time2);
 	println!("Total {:?}", time3 - time0);
+
+	Ok(())
 }
