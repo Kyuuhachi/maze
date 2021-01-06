@@ -55,7 +55,7 @@ pub fn render(maze: &Maze, ncells: u32, hue: f32, hue_spread: f32) -> image::Rgb
 
 	let dist = distance(&maze, &centers);
 
-	let maxdist = dist.fold(0, |a, b| std::cmp::max(a, b.1));
+	let maxdist = dist.fold(0, |a, b| usize::max(a, b.1));
 
 	image::ImageBuffer::from_fn(dist.nrows() as u32,dist.ncols() as u32, |x, y| {
 		let (which, d) = dist[(x as usize, y as usize)];
