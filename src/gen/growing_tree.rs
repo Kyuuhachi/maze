@@ -26,34 +26,28 @@ pub fn prim_true(w: usize, h: usize) -> Maze {
 	)
 }
 
-pub fn growing_tree2<T, Push, Pop>(w: usize, h: usize, state: &mut T, push: Push, pop: Pop) -> Maze
-where
-	Push: Fn(&mut T, (Dir, Pos)),
-	Pop: Fn(&mut T) -> Option<(Dir, Pos)>,
-{
+pub fn growing_tree2<T, Push, Pop>(
+	w: usize,
+	h: usize,
+	state: &mut T,
+	push: impl Fn(&mut T, (Dir, Pos)),
+	pop: impl Fn(&mut T) -> Option<(Dir, Pos)>,
+) -> Maze {
 	let mut rng = rand::thread_rng();
 	let mut maze = Maze::new(w, h, Tiling::Clamp, false);
 	let mut seen: Array2<bool> = Array2::from_shape_simple_fn((w, h), || false);
-	{
-		let start = (rng.gen_range(0..w), rng.gen_range(0..h));
-		let mut dirs = Dir::ALL;
-		dirs.shuffle(&mut rng);
-		for &dir in &dirs {
-			push(state, (dir, start));
-		}
+
+	let start = (rng.gen_range(0..w), rng.gen_range(0..h));
+	let mut dirs = Dir::ALL;
+	dirs.shuffle(&mut rng);
+	for &dir in &dirs {
+		push(state, (dir, start));
 	}
-	// let mut i = 0;
+
 	while let Some((dir1, pos)) = pop(state) {
 		if seen[pos] { continue; }
 		seen[pos] = true;
 		maze[(dir1, pos)] = true;
-
-
-		// i+=1;
-		// if i % (w/2) == 0 {
-		// 	println!("{}", maze);
-		// 	std::thread::sleep(std::time::Duration::from_millis(70))
-		// }
 
 		let mut dirs = Dir::ALL;
 		dirs.shuffle(&mut rng);
@@ -68,28 +62,26 @@ where
 			}
 		}
 	}
-	// println!("{}", i);
+
 	maze
 }
 
-pub fn growing_tree<T, Push, Pop>(w: usize, h: usize, state: &mut T, push: Push, pop: Pop) -> Maze
-where
-	Push: Fn(&mut T, Pos),
-	Pop: Fn(&mut T) -> Option<Pos>,
-{
+pub fn growing_tree<T>(
+	w: usize,
+	h: usize,
+	state: &mut T,
+	push: impl Fn(&mut T, Pos),
+	pop: impl Fn(&mut T) -> Option<Pos>,
+) -> Maze {
 	let mut rng = rand::thread_rng();
 	let mut maze = Maze::new(w, h, Tiling::Clamp, false);
 	let mut seen: Array2<bool> = Array2::from_shape_simple_fn((w, h), || false);
+
 	let start = (rng.gen_range(0..w), rng.gen_range(0..h));
 	seen[start] = true;
 	push(state, start);
-	// let mut i = 0;
+
 	while let Some(pos) = pop(state) {
-		// i+=1;
-		// if i % (w/2) == 0 {
-		// 	println!("{}", maze);
-		// 	std::thread::sleep(std::time::Duration::from_millis(70))
-		// }
 
 		let mut dirs = Dir::ALL;
 		dirs.shuffle(&mut rng);
@@ -103,6 +95,5 @@ where
 			}
 		}
 	}
-	// println!("{}", i);
 	maze
 }
