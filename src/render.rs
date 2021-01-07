@@ -67,4 +67,3 @@ pub fn render(maze: &Maze, ncells: u32, hue: f32, hue_spread: f32) -> image::Rgb
 		hsv2rgb(hue, sat, val)
 	})
 }
-
