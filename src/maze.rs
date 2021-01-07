@@ -10,16 +10,15 @@ impl Dir {
 
 pub type Pos = (usize, usize);
 
-struct Cell { right: bool, down: bool }
-
 pub struct Maze {
-	data: Array2<Cell>,
+	// (right, down)
+	data: Array2<(bool, bool)>,
 }
 
 impl Maze {
 	pub fn new(w: usize, h: usize, open: bool) -> Self {
 		Maze {
-			data: Array2::from_shape_simple_fn((w, h), || Cell {right: open, down: open})
+			data: Array2::from_shape_simple_fn((w, h), || (open, open))
 		}
 	}
 
@@ -43,10 +42,10 @@ impl std::ops::Index<(Dir, Pos)> for Maze {
 		match self.shift(dir, pos) {
 			None => &false,
 			Some(pos2) => match dir {
-				Dir::Right => &self.data[pos].right,
-				Dir::Down  => &self.data[pos].down,
-				Dir::Left  => &self.data[pos2].right,
-				Dir::Up    => &self.data[pos2].down,
+				Dir::Right => &self.data[pos].0,
+				Dir::Down  => &self.data[pos].1,
+				Dir::Left  => &self.data[pos2].0,
+				Dir::Up    => &self.data[pos2].1,
 			}
 		}
 	}
@@ -57,10 +56,10 @@ impl std::ops::IndexMut<(Dir, Pos)> for Maze {
 		match self.shift(dir, pos) {
 			None => panic!("Cannot open edges"),
 			Some(pos2) => match dir {
-				Dir::Right => &mut self.data[pos].right,
-				Dir::Down  => &mut self.data[pos].down,
-				Dir::Left  => &mut self.data[pos2].right,
-				Dir::Up    => &mut self.data[pos2].down,
+				Dir::Right => &mut self.data[pos].0,
+				Dir::Down  => &mut self.data[pos].1,
+				Dir::Left  => &mut self.data[pos2].0,
+				Dir::Up    => &mut self.data[pos2].1,
 			}
 		}
 	}
