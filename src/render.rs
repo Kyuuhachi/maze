@@ -8,7 +8,7 @@ fn distance(
 ) -> Array2<(usize, usize)> { // Which center (index in centers), and distance
     use std::collections::VecDeque;
 
-	let mut distance = Array2::maybe_uninit((maze.width(), maze.height()));
+	let mut distance = Array2::from_shape_simple_fn((maze.width(), maze.height()), || (0, 0));
 	let mut seen = Array2::from_shape_simple_fn((maze.width(), maze.height()), || false);
 	let mut queue = VecDeque::new();
 	for (id, &pos) in centers.iter().enumerate() {
@@ -20,7 +20,7 @@ fn distance(
 			continue
 		} else {
 			seen[pos] = true;
-			distance[pos] = std::mem::MaybeUninit::new((id, dist));
+			distance[pos] = (id, dist);
 		}
 
 		for &dir in &Dir::ALL {
@@ -32,7 +32,7 @@ fn distance(
 		}
 	}
 
-	unsafe { distance.assume_init() }
+	distance
 }
 
 fn hsv2rgb(hue: f32, sat: f32, val: f32) -> image::Rgb<u8> {
