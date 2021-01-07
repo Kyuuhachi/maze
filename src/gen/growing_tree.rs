@@ -82,7 +82,6 @@ pub fn growing_tree<T>(
 	push(state, start);
 
 	while let Some(pos) = pop(state) {
-
 		let mut dirs = Dir::ALL;
 		dirs.shuffle(&mut rng);
 		for &dir in &dirs {
