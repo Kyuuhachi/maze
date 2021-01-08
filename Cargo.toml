@@ -1,6 +1,8 @@
 [package]
 name = "maze"
-version = "0.0.0"
+version = "0.1.0"
+description = "Renders images suitable as desktop backgrounds, generated using mazes."
+authors = ["Kyuuhachi <caagr98@gmail.com>"]
 edition = "2018"
 
 [dependencies]
@@ -8,4 +10,4 @@ rand = "0.8.1"
 ndarray = "0.14.0"
 image = { version="0.23.2", default-features=false, features=["png"] }
 ena = "0.14.0"
-clap = "2.33.3"
+structopt = "0.3.21"

@@ -48,8 +48,7 @@ pub fn render(
 	rng: &mut (impl rand::Rng + ?Sized),
 	maze: &Maze,
 	ncells: u32,
-	hue: f32,
-	hue_spread: f32,
+	color: (f32, f32),
 ) -> image::RgbImage {
 
 	let centers = (0..ncells).map(|_| (
@@ -61,10 +60,11 @@ pub fn render(
 
 	let maxdist = dist.fold(0, |a, b| usize::max(a, b.1));
 
+	let hues: Vec<f32> = (0..ncells).map(|_| rng.gen_range(color.0..color.1)).collect();
+
 	image::ImageBuffer::from_fn(dist.nrows() as u32,dist.ncols() as u32, |x, y| {
 		let (which, d) = dist[(x as usize, y as usize)];
-		let hue_offset = (which as f32 - (centers.len() - 1) as f32 / 2.) / centers.len() as f32;
-		let hue = hue + hue_offset * hue_spread;
+		let hue = hues[which];
 		let fade = d as f32 / maxdist as f32;
 		let sat = 0.2 + 0.8*fade;
 		let val = 1.0 - 0.6*fade;
