@@ -16,9 +16,8 @@ pub fn prim_simplified(w: usize, h: usize) -> Maze {
 
 pub fn prim_true(w: usize, h: usize) -> Maze {
 	use std::collections::BinaryHeap;
-	use ndarray_rand::RandomExt;
-	use ndarray_rand::rand_distr::Uniform;
-	let weight = Array2::random((w, h), Uniform::new_inclusive(u32::MIN, u32::MAX));
+	let mut rng = rand::thread_rng();
+	let weight: Array2<u32> = Array2::from_shape_simple_fn((w, h), ||rng.gen());
 	growing_tree(w, h,
 		&mut BinaryHeap::new(),
 		|heap, pos| heap.push((weight[pos], pos)),

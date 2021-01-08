@@ -7,6 +7,5 @@ edition = "2018"
 rand = "0.8.1"
 ndarray = "0.14.0"
 image = { version="0.23.2", default-features=false, features=["png"] }
-ndarray-rand = "0.13.0"
 ena = "0.14.0"
 clap = "2.33.3"
