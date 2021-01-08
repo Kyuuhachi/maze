@@ -60,7 +60,7 @@ pub fn render(
 
 	let maxdist = dist.fold(0, |a, b| usize::max(a, b.1));
 
-	let hues: Vec<f32> = (0..ncells).map(|_| rng.gen_range(color.0..color.1)).collect();
+	let hues: Vec<f32> = (0..ncells).map(|_| rng.gen_range(color.0..color.1) / 360.).collect();
 
 	image::ImageBuffer::from_fn(dist.nrows() as u32,dist.ncols() as u32, |x, y| {
 		let (which, d) = dist[(x as usize, y as usize)];
