@@ -14,8 +14,7 @@ impl ena::unify::UnifyKey for Key {
 
 pub struct Kruskal;
 impl Generator for Kruskal {
-	fn generate(&self, size: Size) -> Maze {
-		let mut rng = rand::thread_rng();
+	fn generate(&self, mut rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze {
 		let mut maze = Maze::new(size, false);
 		let mut poss = Vec::new();
 		let mut uf: InPlaceUnificationTable<Key> = InPlaceUnificationTable::new();

@@ -1,13 +1,11 @@
 use crate::maze::*;
 use std::cmp::Ordering;
-use rand::Rng;
 
 struct Rect(usize, usize, usize, usize);
 
 pub struct RecursiveDivision;
 impl Generator for RecursiveDivision {
-	fn generate(&self, size: Size) -> Maze {
-		let mut rng = rand::thread_rng();
+	fn generate(&self, rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze {
 		let mut maze = Maze::new(size, true);
 		let mut rects = Vec::new();
 		rects.push(Rect(0, 0, maze.w(), maze.h()));

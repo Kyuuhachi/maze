@@ -1,6 +1,5 @@
 use crate::maze::*;
 use ndarray::Array2;
-use rand::Rng;
 
 fn distance(
 	maze: &Maze,
@@ -45,8 +44,13 @@ fn hsv2rgb(hue: f32, sat: f32, val: f32) -> image::Rgb<u8> {
 	return image::Rgb([calc(0.), calc(1.), calc(2.)]);
 }
 
-pub fn render(maze: &Maze, ncells: u32, hue: f32, hue_spread: f32) -> image::RgbImage {
-	let mut rng = rand::thread_rng();
+pub fn render(
+	rng: &mut (impl rand::Rng + ?Sized),
+	maze: &Maze,
+	ncells: u32,
+	hue: f32,
+	hue_spread: f32,
+) -> image::RgbImage {
 
 	let centers = (0..ncells).map(|_| (
 		rng.gen_range(0..maze.w()),

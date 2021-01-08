@@ -8,6 +8,7 @@ mod gen {
 	pub mod sidewinder;
 }
 
+use rand::prelude::*;
 use maze::Generator;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -20,11 +21,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	// let gen = gen::kruskal::Kruskal;
 	// let gen = gen::binary::BinaryTree;
 	// let gen = gen::sidewinder::SideWinder;
-	let maze = gen.generate((1920, 1080));
+	let mut rng = rand::rngs::StdRng::from_entropy();
+	let maze = gen.generate(&mut rng, (1920, 1080));
 
 	let time1 = Instant::now();
 	println!("Generated in {:?}", time1 - time0);
-	let img = render::render(&maze, 64, 0., 1.0);
+	let img = render::render(&mut rng, &maze, 64, 0., 1.0);
 	let time2 = Instant::now();
 	println!("Rendered in {:?}", time2 - time1);
 	img.save("test.png")?;

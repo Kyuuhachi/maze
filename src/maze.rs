@@ -1,5 +1,5 @@
 use std::fmt;
-use ndarray::*;
+use ndarray::Array2;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Dir { Right, Down, Left, Up }
@@ -13,7 +13,7 @@ pub type Pos = (usize, usize);
 pub type Size = (usize, usize);
 
 pub trait Generator {
-	fn generate(&self, size: Size) -> Maze;
+	fn generate(&self, rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze;
 }
 
 pub struct Maze {

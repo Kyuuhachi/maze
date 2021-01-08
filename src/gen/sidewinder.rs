@@ -1,11 +1,9 @@
 use crate::maze::*;
-use rand::Rng;
 
 // Intentionally leaving this one to one orientation only
 pub struct SideWinder;
 impl Generator for SideWinder {
-	fn generate(&self, size: Size) -> Maze {
-		let mut rng = rand::thread_rng();
+	fn generate(&self, rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze {
 		let mut maze = Maze::new(size, true);
 
 		let diffusion = if rng.gen() {4} else {1};

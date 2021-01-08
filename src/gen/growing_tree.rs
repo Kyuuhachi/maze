@@ -1,36 +1,40 @@
 use crate::maze::*;
 use ndarray::Array2;
-use rand::{Rng, seq::SliceRandom};
+use rand::prelude::*;
 
 pub struct BackTrack;
 impl Generator for BackTrack {
-	fn generate(&self, size: Size) -> Maze {
-		growing_tree(size, &mut Vec::new(), Vec::push, Vec::pop)
+	fn generate(&self, rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze {
+		growing_tree(rng, size, &mut Vec::new(), &mut Vec::push, &mut Vec::pop)
 	}
 }
 
 pub struct PrimTrue;
 impl Generator for PrimTrue {
-	fn generate(&self, size: Size) -> Maze {
+	fn generate(&self, rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze {
 		use std::collections::BinaryHeap;
-		let mut rng = rand::thread_rng();
 		let weight: Array2<u32> = Array2::from_shape_simple_fn(size, ||rng.gen());
-		growing_tree(size,
+		growing_tree(rng, size,
 			&mut BinaryHeap::new(),
-			|heap, pos| heap.push((weight[pos], pos)),
-			|heap| heap.pop().map(|a|a.1),
+			&mut |heap, pos| heap.push((weight[pos], pos)),
+			&mut |heap| heap.pop().map(|a|a.1),
 		)
 	}
 }
 
 pub struct PrimSimplified;
 impl Generator for PrimSimplified {
-	fn generate(&self, size: Size) -> Maze {
-		growing_tree(size, &mut Vec::new(), |vec, v| {
+	fn generate(&self, rng: &mut (impl Rng + ?Sized), size: Size) -> Maze {
+
+		let mut seed: <StdRng as SeedableRng>::Seed = Default::default();
+		rng.fill(&mut seed);
+		let mut rng2 = StdRng::from_seed(seed);
+
+		growing_tree(rng, size, &mut Vec::new(), &mut |vec, v| {
 			vec.push(v);
 			let l = vec.len();
-			vec.swap(rand::thread_rng().gen_range(0..l), l - 1);
-		}, Vec::pop)
+			vec.swap(rng2.gen_range(0..l), l - 1);
+		}, &mut Vec::pop)
 	}
 }
 
@@ -38,12 +42,12 @@ impl Generator for PrimSimplified {
 // which makes the mazes "fuzzier". With my rendering method that makes it look better though, so
 // I'm keeping it. A corrected version sits unused below.
 fn growing_tree<T>(
+	mut rng: &mut (impl rand::Rng + ?Sized),
 	size: Size,
 	state: &mut T,
-	push: impl Fn(&mut T, Pos),
-	pop: impl Fn(&mut T) -> Option<Pos>,
+	push: &mut impl FnMut(&mut T, Pos),
+	pop: &mut impl FnMut(&mut T) -> Option<Pos>,
 ) -> Maze {
-	let mut rng = rand::thread_rng();
 	let mut maze = Maze::new(size, false);
 	let mut seen = Array2::from_shape_simple_fn(size, || false);
 
@@ -68,12 +72,12 @@ fn growing_tree<T>(
 }
 
 fn _growing_tree2<T>(
+	mut rng: &mut (impl rand::Rng + ?Sized),
 	size: Size,
 	state: &mut T,
-	push: impl Fn(&mut T, (Dir, Pos)),
-	pop: impl Fn(&mut T) -> Option<(Dir, Pos)>,
+	push: &mut impl FnMut(&mut T, (Dir, Pos)),
+	pop: &mut impl FnMut(&mut T) -> Option<(Dir, Pos)>,
 ) -> Maze {
-	let mut rng = rand::thread_rng();
 	let mut maze = Maze::new(size, false);
 	let mut seen = Array2::from_shape_simple_fn(size, || false);
 

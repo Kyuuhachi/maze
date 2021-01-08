@@ -1,10 +1,8 @@
 use crate::maze::*;
-use rand::Rng;
 
 pub struct BinaryTree;
 impl Generator for BinaryTree {
-	fn generate(&self, size: Size) -> Maze {
-		let mut rng = rand::thread_rng();
+	fn generate(&self, rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze {
 		let mut maze = Maze::new(size, true);
 
 		let (hdir, hmin, hmax) =
