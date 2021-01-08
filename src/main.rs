@@ -11,9 +11,18 @@ mod gen {
 use rand::prelude::*;
 use maze::Generator;
 
+macro_rules! time {
+	($x:literal, $y:expr) => { {
+		use std::time::Instant;
+		let time1 = Instant::now();
+		let v = $y;
+		let time2 = Instant::now();
+		println!("{:10} {:?}", $x, time2 - time1);
+		v
+	} };
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-	use std::time::Instant;
-	let time0 = Instant::now();
 	// let gen = gen::growing_tree::BackTrack;
 	// let gen = gen::growing_tree::PrimSimplified;
 	let gen = gen::growing_tree::PrimTrue;
@@ -22,17 +31,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	// let gen = gen::binary::BinaryTree;
 	// let gen = gen::sidewinder::SideWinder;
 	let mut rng = rand::rngs::StdRng::from_entropy();
-	let maze = gen.generate(&mut rng, (1920, 1080));
 
-	let time1 = Instant::now();
-	println!("Generated in {:?}", time1 - time0);
-	let img = render::render(&mut rng, &maze, 64, 0., 1.0);
-	let time2 = Instant::now();
-	println!("Rendered in {:?}", time2 - time1);
-	img.save("test.png")?;
-	let time3 = Instant::now();
-	println!("Saved in {:?}", time3 - time2);
-	println!("Total {:?}", time3 - time0);
+	time!("Total", {
+		let maze = time!("Generation", gen.generate(&mut rng, (1920, 1080)));
+		let img = time!("Rendering", render::render(&mut rng, &maze, 64, 0., 1.0));
+		time!("Saving", img.save("test.png"))?
+	});
 
 	Ok(())
 }
