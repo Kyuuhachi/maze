@@ -11,14 +11,14 @@ mod gen {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 	use std::time::Instant;
 	let time0 = Instant::now();
-	// let maze = gen::recursive_division::generate(300, 300);
-	// let maze = gen::growing_tree::prim_simplified(300, 300);
-	// let maze = gen::growing_tree::prim_true(300, 300);
-	// let maze = gen::growing_tree::backtrack(300, 300);
-	// let maze = gen::growing_tree::prim_true(1920, 1080);
-	// let maze = gen::kruskal::generate(1920, 1080);
-	// let maze = gen::binary::generate(1920, 1080);
-	let maze = gen::sidewinder::generate(1920, 1080);
+	// let maze = gen::recursive_division::generate((300, 300));
+	// let maze = gen::growing_tree::prim_simplified((300, 300));
+	// let maze = gen::growing_tree::prim_true((300, 300));
+	// let maze = gen::growing_tree::backtrack((300, 300));
+	let maze = gen::growing_tree::prim_true((1920, 1080));
+	// let maze = gen::kruskal::generate((1920, 1080));
+	// let maze = gen::binary::generate((1920, 1080));
+	// let maze = gen::sidewinder::generate((1920, 1080));
 
 	let time1 = Instant::now();
 	println!("Generated in {:?}", time1 - time0);

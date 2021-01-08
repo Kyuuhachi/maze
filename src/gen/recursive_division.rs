@@ -4,11 +4,11 @@ use rand::Rng;
 
 struct Rect(usize, usize, usize, usize);
 
-pub fn generate(w: usize, h: usize) -> Maze {
+pub fn generate(size: Size) -> Maze {
 	let mut rng = rand::thread_rng();
-	let mut maze = Maze::new(w, h, true);
+	let mut maze = Maze::new(size, true);
 	let mut rects = Vec::new();
-	rects.push(Rect(0, 0, w, h));
+	rects.push(Rect(0, 0, maze.w(), maze.h()));
 	while let Some(Rect(x1, y1, x2, y2)) = rects.pop() {
 		if x2-x1 < 2 || y2-y1 < 2 { continue }
 

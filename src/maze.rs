@@ -10,29 +10,31 @@ impl Dir {
 
 pub type Pos = (usize, usize);
 
+pub type Size = (usize, usize);
+
 pub struct Maze {
 	// (right, down)
 	data: Array2<(bool, bool)>,
 }
 
 impl Maze {
-	pub fn new(w: usize, h: usize, open: bool) -> Self {
+	pub fn new(size: Size, open: bool) -> Self {
 		Maze {
-			data: Array2::from_shape_simple_fn((w, h), || (open, open))
+			data: Array2::from_shape_simple_fn(size, || (open, open))
 		}
 	}
 
 	pub fn shift(&self, dir: Dir, (x, y): Pos) -> Option<Pos> {
 		match dir {
-			Dir::Right => if x == self.width()-1  {None} else {Some((x+1,y))},
-			Dir::Down  => if y == self.height()-1 {None} else {Some((x,y+1))},
+			Dir::Right => if x == self.w()-1 {None} else {Some((x+1,y))},
+			Dir::Down  => if y == self.h()-1 {None} else {Some((x,y+1))},
 			Dir::Left  => if x == 0 {None} else {Some((x-1,y))},
 			Dir::Up    => if y == 0 {None} else {Some((x,y-1))},
 		}
 	}
 
-	pub fn width(&self) -> usize { self.data.nrows() }
-	pub fn height(&self) -> usize { self.data.ncols() }
+	pub fn w(&self) -> usize { self.data.nrows() }
+	pub fn h(&self) -> usize { self.data.ncols() }
 }
 
 impl std::ops::Index<(Dir, Pos)> for Maze {
@@ -68,15 +70,15 @@ impl std::ops::IndexMut<(Dir, Pos)> for Maze {
 impl std::fmt::Display for Maze {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		write!(f, "▄")?;
-		for x in 0..self.width() {
+		for x in 0..self.w() {
 			write!(f, "{}", if self[(Dir::Up, (x, 0))] {" "} else {"▄"})?;
 			write!(f, "▄")?;
 		}
 
-		for y in 0..self.height() {
+		for y in 0..self.h() {
 			write!(f, "\n")?;
 			write!(f, "{}", if self[(Dir::Left, (0, y))] {"▄"} else {"█"})?;
-			for x in 0..self.width() {
+			for x in 0..self.w() {
 				write!(f, "{}", if self[(Dir::Down, (x, y))] {" "} else {"▄"})?;
 				write!(f, "{}", if self[(Dir::Right, (x, y))] {"▄"} else {"█"})?;
 			}

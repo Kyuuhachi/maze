@@ -8,8 +8,8 @@ fn distance(
 ) -> Array2<(usize, usize)> { // Which center (index in centers), and distance
     use std::collections::VecDeque;
 
-	let mut distance = Array2::from_shape_simple_fn((maze.width(), maze.height()), || (0, 0));
-	let mut seen = Array2::from_shape_simple_fn((maze.width(), maze.height()), || false);
+	let mut distance = Array2::from_shape_simple_fn((maze.w(), maze.h()), || (0, 0));
+	let mut seen = Array2::from_shape_simple_fn((maze.w(), maze.h()), || false);
 	let mut queue = VecDeque::new();
 	for (id, &pos) in centers.iter().enumerate() {
 		queue.push_back((pos, id, 0));
@@ -49,8 +49,8 @@ pub fn render(maze: &Maze, ncells: u32, hue: f32, hue_spread: f32) -> image::Rgb
 	let mut rng = rand::thread_rng();
 
 	let centers = (0..ncells).map(|_| (
-		rng.gen_range(0..maze.width()),
-		rng.gen_range(0..maze.height()),
+		rng.gen_range(0..maze.w()),
+		rng.gen_range(0..maze.h()),
 	)).collect();
 
 	let dist = distance(&maze, &centers);

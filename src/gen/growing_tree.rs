@@ -2,23 +2,23 @@ use crate::maze::*;
 use ndarray::Array2;
 use rand::{Rng, seq::SliceRandom};
 
-pub fn backtrack(w: usize, h: usize) -> Maze {
-	growing_tree(w, h, &mut Vec::new(), Vec::push, Vec::pop)
+pub fn backtrack(size: Size) -> Maze {
+	growing_tree(size, &mut Vec::new(), Vec::push, Vec::pop)
 }
 
-pub fn prim_simplified(w: usize, h: usize) -> Maze {
-	growing_tree(w, h, &mut Vec::new(), |vec, v| {
+pub fn prim_simplified(size: Size) -> Maze {
+	growing_tree(size, &mut Vec::new(), |vec, v| {
 		vec.push(v);
 		let l = vec.len();
 		vec.swap(rand::thread_rng().gen_range(0..l), l - 1);
 	}, Vec::pop)
 }
 
-pub fn prim_true(w: usize, h: usize) -> Maze {
+pub fn prim_true(size: Size) -> Maze {
 	use std::collections::BinaryHeap;
 	let mut rng = rand::thread_rng();
-	let weight: Array2<u32> = Array2::from_shape_simple_fn((w, h), ||rng.gen());
-	growing_tree(w, h,
+	let weight: Array2<u32> = Array2::from_shape_simple_fn(size, ||rng.gen());
+	growing_tree(size,
 		&mut BinaryHeap::new(),
 		|heap, pos| heap.push((weight[pos], pos)),
 		|heap| heap.pop().map(|a|a.1),
@@ -26,17 +26,16 @@ pub fn prim_true(w: usize, h: usize) -> Maze {
 }
 
 pub fn growing_tree2<T, Push, Pop>(
-	w: usize,
-	h: usize,
+	size: Size,
 	state: &mut T,
 	push: impl Fn(&mut T, (Dir, Pos)),
 	pop: impl Fn(&mut T) -> Option<(Dir, Pos)>,
 ) -> Maze {
 	let mut rng = rand::thread_rng();
-	let mut maze = Maze::new(w, h, false);
-	let mut seen: Array2<bool> = Array2::from_shape_simple_fn((w, h), || false);
+	let mut maze = Maze::new(size, false);
+	let mut seen: Array2<bool> = Array2::from_shape_simple_fn(size, || false);
 
-	let start = (rng.gen_range(0..w), rng.gen_range(0..h));
+	let start = (rng.gen_range(0..maze.w()), rng.gen_range(0..maze.h()));
 	let mut dirs = Dir::ALL;
 	dirs.shuffle(&mut rng);
 	for &dir in &dirs {
@@ -66,17 +65,16 @@ pub fn growing_tree2<T, Push, Pop>(
 }
 
 pub fn growing_tree<T>(
-	w: usize,
-	h: usize,
+	size: Size,
 	state: &mut T,
 	push: impl Fn(&mut T, Pos),
 	pop: impl Fn(&mut T) -> Option<Pos>,
 ) -> Maze {
 	let mut rng = rand::thread_rng();
-	let mut maze = Maze::new(w, h, false);
-	let mut seen: Array2<bool> = Array2::from_shape_simple_fn((w, h), || false);
+	let mut maze = Maze::new(size, false);
+	let mut seen: Array2<bool> = Array2::from_shape_simple_fn(size, || false);
 
-	let start = (rng.gen_range(0..w), rng.gen_range(0..h));
+	let start = (rng.gen_range(0..maze.w()), rng.gen_range(0..maze.h()));
 	seen[start] = true;
 	push(state, start);
 
