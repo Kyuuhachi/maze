@@ -2,6 +2,7 @@ use crate::maze::*;
 use ndarray::Array2;
 use rand::prelude::*;
 
+
 pub struct BackTrack;
 impl Generator for BackTrack {
 	fn generate(&self, rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze {
@@ -25,10 +26,11 @@ impl Generator for PrimTrue {
 pub struct PrimSimplified;
 impl Generator for PrimSimplified {
 	fn generate(&self, rng: &mut (impl Rng + ?Sized), size: Size) -> Maze {
-
-		let mut seed: <StdRng as SeedableRng>::Seed = Default::default();
-		rng.fill(&mut seed);
-		let mut rng2 = StdRng::from_seed(seed);
+		let mut rng2 = StdRng::from_seed({
+			let mut seed = Default::default();
+			rng.fill(&mut seed);
+			seed
+		});
 
 		growing_tree(rng, size, &mut Vec::new(), &mut |vec, v| {
 			vec.push(v);
