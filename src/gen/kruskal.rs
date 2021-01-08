@@ -12,28 +12,31 @@ impl ena::unify::UnifyKey for Key {
 	fn tag() -> &'static str { "Key" }
 }
 
-pub fn generate(size: Size) -> Maze {
-	let mut rng = rand::thread_rng();
-	let mut maze = Maze::new(size, false);
-	let mut poss = Vec::new();
-	let mut uf: InPlaceUnificationTable<Key> = InPlaceUnificationTable::new();
-	let mut keys = Array2::from_shape_simple_fn(size, || Key(0));
-	for x in 0..maze.w() {
-		for y in 0..maze.h() {
-			keys[(x, y)] = uf.new_key(());
-			for &dir in &Dir::ALL {
-				poss.push((dir, (x, y)));
+pub struct Kruskal;
+impl Generator for Kruskal {
+	fn generate(&self, size: Size) -> Maze {
+		let mut rng = rand::thread_rng();
+		let mut maze = Maze::new(size, false);
+		let mut poss = Vec::new();
+		let mut uf: InPlaceUnificationTable<Key> = InPlaceUnificationTable::new();
+		let mut keys = Array2::from_shape_simple_fn(size, || Key(0));
+		for x in 0..maze.w() {
+			for y in 0..maze.h() {
+				keys[(x, y)] = uf.new_key(());
+				for &dir in &Dir::ALL {
+					poss.push((dir, (x, y)));
+				}
 			}
 		}
-	}
-	poss.shuffle(&mut rng);
-	for &(dir, pos) in &poss {
-		if let Some(pos2) = maze.shift(dir, pos) {
-			if !uf.unioned(keys[pos], keys[pos2]) {
-				uf.union(keys[pos], keys[pos2]);
-				maze[(dir, pos)] = true;
+		poss.shuffle(&mut rng);
+		for &(dir, pos) in &poss {
+			if let Some(pos2) = maze.shift(dir, pos) {
+				if !uf.unioned(keys[pos], keys[pos2]) {
+					uf.union(keys[pos], keys[pos2]);
+					maze[(dir, pos)] = true;
+				}
 			}
 		}
+		maze
 	}
-	maze
 }

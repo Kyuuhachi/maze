@@ -8,18 +8,19 @@ mod gen {
 	pub mod sidewinder;
 }
 
+use maze::Generator;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 	use std::time::Instant;
 	let time0 = Instant::now();
-	// let f = gen::recursive_division::generate;
-	// let f = gen::growing_tree::prim_simplified;
-	// let f = gen::growing_tree::prim_true;
-	// let f = gen::growing_tree::backtrack;
-	let f = gen::growing_tree::prim_true;
-	// let f = gen::kruskal::generate;
-	// let f = gen::binary::generate;
-	// let f = gen::sidewinder::generate;
-	let maze = f((1920, 1080));
+	// let gen = gen::growing_tree::BackTrack;
+	// let gen = gen::growing_tree::PrimSimplified;
+	let gen = gen::growing_tree::PrimTrue;
+	// let gen = gen::recursive_division::RecursiveDivision;
+	// let gen = gen::kruskal::Kruskal;
+	// let gen = gen::binary::BinaryTree;
+	// let gen = gen::sidewinder::SideWinder;
+	let maze = gen.generate((1920, 1080));
 
 	let time1 = Instant::now();
 	println!("Generated in {:?}", time1 - time0);

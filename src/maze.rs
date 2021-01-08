@@ -12,6 +12,10 @@ pub type Pos = (usize, usize);
 
 pub type Size = (usize, usize);
 
+pub trait Generator {
+	fn generate(&self, size: Size) -> Maze;
+}
+
 pub struct Maze {
 	// (right, down)
 	data: Array2<(bool, bool)>,
