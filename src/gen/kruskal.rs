@@ -22,9 +22,8 @@ impl Generator for Kruskal {
 		for x in 0..maze.w() {
 			for y in 0..maze.h() {
 				keys[(x, y)] = uf.new_key(());
-				for &dir in &Dir::ALL {
-					poss.push((dir, (x, y)));
-				}
+				poss.push((Dir::Down, (x, y)));
+				poss.push((Dir::Right, (x, y)));
 			}
 		}
 		poss.shuffle(&mut rng);
