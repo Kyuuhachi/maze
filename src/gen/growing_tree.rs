@@ -2,17 +2,16 @@ use crate::maze::*;
 use ndarray::Array2;
 use rand::prelude::*;
 
-
-pub struct BackTrack;
-impl Generator for BackTrack {
-	fn generate(&self, rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze {
+pub struct Backtrack;
+impl Generator for Backtrack {
+	fn generate(&self, rng: &mut StdRng, size: Size) -> Maze {
 		growing_tree(rng, size, &mut Vec::new(), &mut Vec::push, &mut Vec::pop)
 	}
 }
 
 pub struct PrimTrue;
 impl Generator for PrimTrue {
-	fn generate(&self, rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze {
+	fn generate(&self, rng: &mut StdRng, size: Size) -> Maze {
 		use std::collections::BinaryHeap;
 		let weight: Array2<u32> = Array2::from_shape_simple_fn(size, ||rng.gen());
 		growing_tree(rng, size,
@@ -25,7 +24,7 @@ impl Generator for PrimTrue {
 
 pub struct PrimSimplified;
 impl Generator for PrimSimplified {
-	fn generate(&self, rng: &mut (impl Rng + ?Sized), size: Size) -> Maze {
+	fn generate(&self, rng: &mut StdRng, size: Size) -> Maze {
 		let mut rng2 = StdRng::from_seed({
 			let mut seed = Default::default();
 			rng.fill(&mut seed);
@@ -44,7 +43,7 @@ impl Generator for PrimSimplified {
 // which makes the mazes "fuzzier". With my rendering method that makes it look better though, so
 // I'm keeping it. A corrected version sits unused below.
 fn growing_tree<T>(
-	mut rng: &mut (impl rand::Rng + ?Sized),
+	mut rng: &mut StdRng,
 	size: Size,
 	state: &mut T,
 	push: &mut impl FnMut(&mut T, Pos),
@@ -74,7 +73,7 @@ fn growing_tree<T>(
 }
 
 fn _growing_tree2<T>(
-	mut rng: &mut (impl rand::Rng + ?Sized),
+	mut rng: &mut StdRng,
 	size: Size,
 	state: &mut T,
 	push: &mut impl FnMut(&mut T, (Dir, Pos)),

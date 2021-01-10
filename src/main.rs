@@ -11,7 +11,6 @@ mod gen {
 use rand::prelude::*;
 use maze::Generator;
 use structopt::StructOpt;
-
 use std::path::PathBuf;
 
 #[derive(Debug, StructOpt)]
@@ -55,6 +54,23 @@ struct Args {
 
 	/// How many regions to use for coloring.
 	nregions: u32,
+
+	#[structopt(subcommand)]
+	mode: Option<Mode>,
+}
+
+#[derive(Debug, StructOpt)]
+enum Mode {
+	Backtrack,
+	PrimSimplified,
+	PrimTrue,
+	RecursiveDivision,
+	Kruskal,
+	BinaryTree {
+		#[structopt(parse(try_from_str=parse_diag_direction))]
+		direction: Option<gen::binary::Direction>,
+	},
+	SideWinder,
 }
 
 fn parse_hue(s: &str) -> Result<(f32, f32), std::num::ParseFloatError> {
@@ -75,20 +91,49 @@ fn parse_hue(s: &str) -> Result<(f32, f32), std::num::ParseFloatError> {
 	s.parse().map(|a: f32| (a-30., a+30.))
 }
 
+fn parse_diag_direction(s: &str) -> Result<gen::binary::Direction, &'static str> {
+	use gen::binary::Direction::*;
+	match s {
+		"se" | "southeast" => Ok(Southeast),
+		"sw" | "southwest" => Ok(Southwest),
+		"nw" | "northwest" => Ok(Northwest),
+		"ne" | "northeast" => Ok(Northeast),
+		_ => Err("must be one of 'se', 'sw', 'nw', or 'ne'")
+	}
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let opt = Args::from_args();
 
-	let gen = gen::growing_tree::BackTrack;
-	// let gen = gen::growing_tree::PrimSimplified;
-	// let gen = gen::growing_tree::PrimTrue;
-	// let gen = gen::recursive_division::RecursiveDivision;
-	// let gen = gen::kruskal::Kruskal;
-	// let gen = gen::binary::BinaryTree;
-	// let gen = gen::sidewinder::SideWinder;
-
-	let seed = opt.seed.unwrap_or_else(|| rand::random());
+	let seed = opt.seed.unwrap_or_else(|| random());
 	if !opt.quiet { println!("Seed: {}", seed); }
-	let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
+	let mut rng = StdRng::seed_from_u64(seed);
+
+	let mode = opt.mode.unwrap_or_else(|| {
+		match rng.gen_range(0..7) {
+			0 => Mode::Backtrack,
+			1 => Mode::PrimSimplified,
+			2 => Mode::PrimTrue,
+			3 => Mode::RecursiveDivision,
+			4 => Mode::Kruskal,
+			5 => Mode::BinaryTree{direction:None},
+			6 => Mode::SideWinder,
+			_ => panic!(),
+		}
+	});
+
+	let gen: Box<dyn Generator> = match mode {
+		Mode::Backtrack             => Box::new(gen::growing_tree::Backtrack),
+		Mode::PrimSimplified        => Box::new(gen::growing_tree::PrimSimplified),
+		Mode::PrimTrue              => Box::new(gen::growing_tree::PrimTrue),
+		Mode::RecursiveDivision     => Box::new(gen::recursive_division::RecursiveDivision),
+		Mode::Kruskal               => Box::new(gen::kruskal::Kruskal),
+		Mode::BinaryTree{direction} => Box::new(gen::binary::BinaryTree(direction.unwrap_or_else(|| {
+			use gen::binary::Direction::*;
+			*vec![Southeast, Southwest, Northwest, Northeast].choose(&mut rng).unwrap()
+		}))),
+		Mode::SideWinder            => Box::new(gen::sidewinder::SideWinder),
+	};
 
 	macro_rules! time {
 		($x:literal, $y:expr) => { {

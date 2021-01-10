@@ -13,7 +13,7 @@ pub type Pos = (usize, usize);
 pub type Size = (usize, usize);
 
 pub trait Generator {
-	fn generate(&self, rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze;
+	fn generate(&self, rng: &mut rand::rngs::StdRng, size: Size) -> Maze;
 }
 
 pub struct Maze {

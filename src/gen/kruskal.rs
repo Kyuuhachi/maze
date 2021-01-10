@@ -1,5 +1,5 @@
 use crate::maze::*;
-use rand::seq::SliceRandom;
+use rand::prelude::*;
 use ena::unify::InPlaceUnificationTable;
 use ndarray::Array2;
 
@@ -14,7 +14,7 @@ impl ena::unify::UnifyKey for Key {
 
 pub struct Kruskal;
 impl Generator for Kruskal {
-	fn generate(&self, mut rng: &mut (impl rand::Rng + ?Sized), size: Size) -> Maze {
+	fn generate(&self, mut rng: &mut StdRng, size: Size) -> Maze {
 		let mut maze = Maze::new(size, false);
 		let mut poss = Vec::new();
 		let mut uf: InPlaceUnificationTable<Key> = InPlaceUnificationTable::new();
