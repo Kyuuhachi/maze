@@ -39,9 +39,6 @@ impl Generator for PrimSimplified {
 	}
 }
 
-// This function is technically broken: it opens its neighbors before they are actually visited,
-// which makes the mazes "fuzzier". With my rendering method that makes it look better though, so
-// I'm keeping it. A corrected version sits unused below.
 fn growing_tree<T>(
 	mut rng: &mut StdRng,
 	size: Size,
@@ -64,49 +61,14 @@ fn growing_tree<T>(
 				if !seen[dest] {
 					maze[(dir, pos)] = true;
 					seen[dest] = true;
+					// Pushing pos before dest would be closer to real DFS behavior, but the
+					// images created this way look better.
 					push(state, dest);
+					push(state, pos);
+					break;
 				}
 			}
 		}
 	}
-	maze
-}
-
-fn _growing_tree2<T>(
-	mut rng: &mut StdRng,
-	size: Size,
-	state: &mut T,
-	push: &mut impl FnMut(&mut T, (Dir, Pos)),
-	pop: &mut impl FnMut(&mut T) -> Option<(Dir, Pos)>,
-) -> Maze {
-	let mut maze = Maze::new(size, false);
-	let mut seen = Array2::from_shape_simple_fn(size, || false);
-
-	let start = (rng.gen_range(0..maze.w()), rng.gen_range(0..maze.h()));
-	let mut dirs = Dir::ALL;
-	dirs.shuffle(&mut rng);
-	for &dir in &dirs {
-		push(state, (dir, start));
-	}
-
-	while let Some((dir1, pos)) = pop(state) {
-		if seen[pos] { continue; }
-		seen[pos] = true;
-		maze[(dir1, pos)] = true;
-
-		let mut dirs = Dir::ALL;
-		dirs.shuffle(&mut rng);
-		for &dir in &dirs {
-			if let Some(dest) = maze.shift(dir, pos) {
-				push(state, (match dir {
-					Dir::Right => Dir::Left,
-					Dir::Down => Dir::Up,
-					Dir::Left => Dir::Right,
-					Dir::Up => Dir::Down,
-				}, dest));
-			}
-		}
-	}
-
 	maze
 }
