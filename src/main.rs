@@ -62,8 +62,8 @@ struct Args {
 #[derive(Debug, StructOpt)]
 enum Mode {
 	Backtrack,
+	Prim,
 	PrimSimplified,
-	PrimTrue,
 	RecursiveDivision,
 	Kruskal,
 	BinaryTree {
@@ -112,8 +112,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let mode = opt.mode.unwrap_or_else(|| {
 		match rng.gen_range(0..7) {
 			0 => Mode::Backtrack,
-			1 => Mode::PrimSimplified,
-			2 => Mode::PrimTrue,
+			1 => Mode::Prim,
+			2 => Mode::PrimSimplified,
 			3 => Mode::RecursiveDivision,
 			4 => Mode::Kruskal,
 			5 => Mode::BinaryTree{direction:None},
@@ -124,8 +124,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 	let gen: Box<dyn Generator> = match mode {
 		Mode::Backtrack             => Box::new(gen::growing_tree::Backtrack),
+		Mode::Prim                  => Box::new(gen::growing_tree::PrimTrue),
 		Mode::PrimSimplified        => Box::new(gen::growing_tree::PrimSimplified),
-		Mode::PrimTrue              => Box::new(gen::growing_tree::PrimTrue),
 		Mode::RecursiveDivision     => Box::new(gen::recursive_division::RecursiveDivision),
 		Mode::Kruskal               => Box::new(gen::kruskal::Kruskal),
 		Mode::BinaryTree{direction} => Box::new(gen::binary::BinaryTree(direction.unwrap_or_else(|| {
