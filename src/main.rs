@@ -12,9 +12,21 @@ use rand::prelude::*;
 use maze::Generator;
 use structopt::StructOpt;
 use std::path::PathBuf;
+use structopt::clap::AppSettings;
 
+// FIXME: --help doesn't work quite as well as I wish. It says SUBCOMMANDS, which feels
+// kinda incorrect, and putting it after a subcommand prints something completely wrong.
 #[derive(Debug, StructOpt)]
-#[structopt(about)]
+#[structopt(about,
+	setting(AppSettings::ColoredHelp),
+	setting(AppSettings::AllArgsOverrideSelf),
+	setting(AppSettings::AllowNegativeNumbers),
+	setting(AppSettings::DisableHelpSubcommand),
+	setting(AppSettings::DeriveDisplayOrder),
+	setting(AppSettings::InferSubcommands),
+	setting(AppSettings::UnifiedHelpMessage),
+	setting(AppSettings::VersionlessSubcommands),
+)]
 struct Args {
 	/// Seed to use for the RNG.
 	///
