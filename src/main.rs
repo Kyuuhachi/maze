@@ -114,14 +114,8 @@ fn parse_diag_direction(s: &str) -> Result<gen::binary::Direction, &'static str>
 	}
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-	let opt = Args::from_args();
-
-	let seed = opt.seed.unwrap_or_else(|| random());
-	if !opt.quiet { println!("Seed: {}", seed); }
-	let mut rng = StdRng::seed_from_u64(seed);
-
-	let mode = opt.mode.unwrap_or_else(|| {
+fn get_generator(rng: &mut StdRng, mode: Option<Mode>) -> Box<dyn Generator> {
+	let mode = mode.unwrap_or_else(|| {
 		match rng.gen_range(0..7) {
 			0 => Mode::Backtrack,
 			1 => Mode::Prim,
@@ -134,7 +128,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 		}
 	});
 
-	let gen: Box<dyn Generator> = match mode {
+	match mode {
 		Mode::Backtrack             => Box::new(gen::growing_tree::Backtrack),
 		Mode::Prim                  => Box::new(gen::growing_tree::PrimTrue),
 		Mode::PrimSimplified        => Box::new(gen::growing_tree::PrimSimplified),
@@ -142,10 +136,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 		Mode::Kruskal               => Box::new(gen::kruskal::Kruskal),
 		Mode::BinaryTree{direction} => Box::new(gen::binary::BinaryTree(direction.unwrap_or_else(|| {
 			use gen::binary::Direction::*;
-			*vec![Southeast, Southwest, Northwest, Northeast].choose(&mut rng).unwrap()
+			*vec![Southeast, Southwest, Northwest, Northeast].choose(rng).unwrap()
 		}))),
 		Mode::Sidewinder            => Box::new(gen::sidewinder::Sidewinder),
-	};
+	}
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+	let opt = Args::from_args();
+
+	let seed = opt.seed.unwrap_or_else(|| random());
+	if !opt.quiet { println!("Seed: {}", seed); }
+	let mut rng = StdRng::seed_from_u64(seed);
+	let gen = get_generator(&mut rng, opt.mode);
 
 	macro_rules! time {
 		($x:literal, $y:expr) => { {
