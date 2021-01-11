@@ -2,19 +2,20 @@ use crate::maze::*;
 use ndarray::Array2;
 use rand::prelude::*;
 
-pub struct Backtrack;
+pub struct Backtrack(pub f32);
 impl Generator for Backtrack {
 	fn generate(&self, rng: &mut StdRng, size: Size) -> Maze {
-		growing_tree(rng, size, &mut Vec::new(), &mut Vec::push, &mut Vec::pop)
+		growing_tree(rng, size, self.0, &mut Vec::new(), &mut Vec::push, &mut Vec::pop)
 	}
 }
 
+// With less twistiness this one is identical to simplified
 pub struct PrimTrue;
 impl Generator for PrimTrue {
 	fn generate(&self, rng: &mut StdRng, size: Size) -> Maze {
 		use std::collections::BinaryHeap;
 		let weight: Array2<u32> = Array2::from_shape_simple_fn(size, ||rng.gen());
-		growing_tree(rng, size,
+		growing_tree(rng, size, 1.,
 			&mut BinaryHeap::new(),
 			&mut |heap, pos| heap.push((weight[pos], pos)),
 			&mut |heap| heap.pop().map(|a|a.1),
@@ -22,7 +23,7 @@ impl Generator for PrimTrue {
 	}
 }
 
-pub struct PrimSimplified;
+pub struct PrimSimplified(pub f32);
 impl Generator for PrimSimplified {
 	fn generate(&self, rng: &mut StdRng, size: Size) -> Maze {
 		let mut rng2 = StdRng::from_seed({
@@ -31,7 +32,7 @@ impl Generator for PrimSimplified {
 			seed
 		});
 
-		growing_tree(rng, size, &mut Vec::new(), &mut |vec, v| {
+		growing_tree(rng, size, self.0, &mut Vec::new(), &mut |vec, v| {
 			vec.push(v);
 			let l = vec.len();
 			vec.swap(rng2.gen_range(0..l), l - 1);
@@ -42,6 +43,7 @@ impl Generator for PrimSimplified {
 fn growing_tree<T>(
 	mut rng: &mut StdRng,
 	size: Size,
+	turn: f32,
 	state: &mut T,
 	push: &mut impl FnMut(&mut T, Pos),
 	pop: &mut impl FnMut(&mut T) -> Option<Pos>,
@@ -63,7 +65,7 @@ fn growing_tree<T>(
 				pos = dest;
 				seen[pos] = true;
 				push(state, pos);
-				if rng.gen_bool(1./1.) { break; }
+				if rng.gen_bool(1./turn as f64) { break; }
 			}
 		}
 	}

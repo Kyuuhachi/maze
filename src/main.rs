@@ -73,9 +73,13 @@ struct Args {
 
 #[derive(Debug, StructOpt)]
 enum Mode {
-	Backtrack,
+	Backtrack {
+		#[structopt(default_value="1")] turn: f32
+	},
 	Prim,
-	PrimSimplified,
+	PrimSimplified {
+		#[structopt(default_value="1")] turn: f32
+	},
 	RecursiveDivision,
 	Kruskal,
 	BinaryTree {
@@ -117,9 +121,9 @@ fn parse_diag_direction(s: &str) -> Result<gen::binary::Direction, &'static str>
 fn get_generator(rng: &mut StdRng, mode: Option<Mode>) -> Box<dyn Generator> {
 	let mode = mode.unwrap_or_else(|| {
 		match rng.gen_range(0..7) {
-			0 => Mode::Backtrack,
+			0 => Mode::Backtrack{turn:1.},
 			1 => Mode::Prim,
-			2 => Mode::PrimSimplified,
+			2 => Mode::PrimSimplified{turn:1.},
 			3 => Mode::RecursiveDivision,
 			4 => Mode::Kruskal,
 			5 => Mode::BinaryTree{direction:None},
@@ -129,9 +133,9 @@ fn get_generator(rng: &mut StdRng, mode: Option<Mode>) -> Box<dyn Generator> {
 	});
 
 	match mode {
-		Mode::Backtrack             => Box::new(gen::growing_tree::Backtrack),
+		Mode::Backtrack{turn}       => Box::new(gen::growing_tree::Backtrack(turn)),
 		Mode::Prim                  => Box::new(gen::growing_tree::PrimTrue),
-		Mode::PrimSimplified        => Box::new(gen::growing_tree::PrimSimplified),
+		Mode::PrimSimplified{turn}  => Box::new(gen::growing_tree::PrimSimplified(turn)),
 		Mode::RecursiveDivision     => Box::new(gen::recursive_division::RecursiveDivision),
 		Mode::Kruskal               => Box::new(gen::kruskal::Kruskal),
 		Mode::BinaryTree{direction} => Box::new(gen::binary::BinaryTree(direction.unwrap_or_else(|| {
