@@ -57,16 +57,13 @@ fn growing_tree<T>(
 		let mut dirs = Dir::ALL;
 		dirs.shuffle(&mut rng);
 		for &dir in &dirs {
-			if let Some(dest) = maze.shift(dir, pos) {
-				if !seen[dest] {
-					maze[(dir, pos)] = true;
-					seen[dest] = true;
-					// Pushing pos before dest would be closer to real DFS behavior, but the
-					// images created this way look better.
-					push(state, dest);
-					push(state, pos);
-					break;
-				}
+			let mut pos = pos;
+			while let Some(dest) = maze.shift(dir, pos).filter(|&p| !seen[p]) {
+				maze[(dir, pos)] = true;
+				pos = dest;
+				seen[pos] = true;
+				push(state, pos);
+				if rng.gen_bool(1./1.) { break; }
 			}
 		}
 	}
