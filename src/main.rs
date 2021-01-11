@@ -6,6 +6,7 @@ mod gen {
 	pub mod kruskal;
 	pub mod binary;
 	pub mod sidewinder;
+	pub mod eller;
 }
 
 use rand::prelude::*;
@@ -87,6 +88,7 @@ enum Mode {
 		direction: Option<gen::binary::Direction>,
 	},
 	Sidewinder,
+	Eller,
 }
 
 fn parse_hue(s: &str) -> Result<(f32, f32), std::num::ParseFloatError> {
@@ -128,6 +130,7 @@ fn get_generator(rng: &mut StdRng, mode: Option<Mode>) -> Box<dyn Generator> {
 			4 => Mode::Kruskal,
 			5 => Mode::BinaryTree{direction:None},
 			6 => Mode::Sidewinder,
+			7 => Mode::Eller,
 			_ => panic!(),
 		}
 	});
@@ -143,6 +146,7 @@ fn get_generator(rng: &mut StdRng, mode: Option<Mode>) -> Box<dyn Generator> {
 			*vec![Southeast, Southwest, Northwest, Northeast].choose(rng).unwrap()
 		}))),
 		Mode::Sidewinder            => Box::new(gen::sidewinder::Sidewinder),
+		Mode::Eller                 => Box::new(gen::eller::Eller),
 	}
 }
 

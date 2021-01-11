@@ -4,7 +4,7 @@ use ena::unify::InPlaceUnificationTable;
 use ndarray::Array2;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-struct Key(u32);
+pub struct Key(pub u32);
 impl ena::unify::UnifyKey for Key {
 	type Value = ();
 	fn index(&self) -> u32 { self.0 }
