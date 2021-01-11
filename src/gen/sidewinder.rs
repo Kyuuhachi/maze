@@ -2,8 +2,8 @@ use crate::maze::*;
 use rand::prelude::*;
 
 // Intentionally leaving this one to one orientation only
-pub struct SideWinder;
-impl Generator for SideWinder {
+pub struct Sidewinder;
+impl Generator for Sidewinder {
 	fn generate(&self, rng: &mut StdRng, size: Size) -> Maze {
 		let mut maze = Maze::new(size, true);
 

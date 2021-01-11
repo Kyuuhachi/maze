@@ -82,7 +82,7 @@ enum Mode {
 		#[structopt(parse(try_from_str=parse_diag_direction))]
 		direction: Option<gen::binary::Direction>,
 	},
-	SideWinder,
+	Sidewinder,
 }
 
 fn parse_hue(s: &str) -> Result<(f32, f32), std::num::ParseFloatError> {
@@ -129,7 +129,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 			3 => Mode::RecursiveDivision,
 			4 => Mode::Kruskal,
 			5 => Mode::BinaryTree{direction:None},
-			6 => Mode::SideWinder,
+			6 => Mode::Sidewinder,
 			_ => panic!(),
 		}
 	});
@@ -144,7 +144,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 			use gen::binary::Direction::*;
 			*vec![Southeast, Southwest, Northwest, Northeast].choose(&mut rng).unwrap()
 		}))),
-		Mode::SideWinder            => Box::new(gen::sidewinder::SideWinder),
+		Mode::Sidewinder            => Box::new(gen::sidewinder::Sidewinder),
 	};
 
 	macro_rules! time {
